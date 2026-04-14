@@ -313,9 +313,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="register-container">
         <div class="brand-header">
-            <h1><i class="fas fa-shield-alt"></i> RentGuard</h1>
-            <p>Create your account</p>
-        </div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
+        <img src="../uploads/profiles/RentCar.jpg"  alt="RentGuard" style="width: 45px; height: 45px; object-fit: contain;">
+        <h1 style="margin: 0; font-size: 24px;">Tagum City Rent Car Jhunrider</h1>
+    </div>
+    <p>Create your account</p>
+</div>
 
         
 
