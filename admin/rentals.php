@@ -2,7 +2,7 @@
 $page_title = 'Manage Rentals';
 require_once '../includes/header.php';
 require_once '../config/database.php';
-
+require_once '../includes/sos-button.php';
 if (!isAdmin()) {
     redirect(BASE_URL . 'auth/login.php');
 }
