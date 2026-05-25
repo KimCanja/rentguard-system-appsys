@@ -3,7 +3,6 @@ $page_title = 'Manage Customers';
 require_once '../includes/header.php';
 require_once '../config/database.php';
 require_once '../includes/sos-button.php';
-
 if (!isAdmin()) {
     redirect(BASE_URL . 'auth/login.php');
 }

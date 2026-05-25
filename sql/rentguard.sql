@@ -93,27 +93,33 @@ CREATE TABLE IF NOT EXISTS schedules (
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id) ON DELETE CASCADE
 );
 
--- Create SOS alerts table
-CREATE TABLE IF NOT EXISTS sos_alerts (
+
+--NEW ADD 
+-- Drop existing table if needed (WARNING: This will delete existing alerts)
+-- DROP TABLE IF EXISTS sos_alerts;
+
+DROP TABLE IF EXISTS sos_alerts;
+
+CREATE TABLE sos_alerts (
     sos_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    rental_id INT,
-    vehicle_id INT,
-    alert_type ENUM('emergency', 'accident', 'mechanical', 'assault', 'other') DEFAULT 'emergency',
-    location_lat DECIMAL(10, 8),
-    location_lng DECIMAL(11, 8),
-    location_address TEXT,
+    alert_type ENUM('emergency', 'accident', 'mechanical', 'assault') NOT NULL,
     message TEXT,
+    rental_id INT DEFAULT NULL,
+    vehicle_id INT DEFAULT NULL,
+    location_lat DECIMAL(10, 8) DEFAULT NULL,
+    location_lng DECIMAL(11, 8) DEFAULT NULL,
     status ENUM('pending', 'responded', 'resolved') DEFAULT 'pending',
+    admin_response TEXT DEFAULT NULL,
+    responded_at TIMESTAMP NULL DEFAULT NULL,
+    responded_by INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    responded_at TIMESTAMP NULL,
-    responded_by INT,
-    admin_response TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (rental_id) REFERENCES rentals(rental_id) ON DELETE SET NULL,
-    FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id) ON DELETE SET NULL,
-    FOREIGN KEY (responded_by) REFERENCES users(id) ON DELETE SET NULL
-);
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 
 -- Insert default admin (password: admin123) - plaintext as requested
 INSERT INTO users (name, email, password, role) 

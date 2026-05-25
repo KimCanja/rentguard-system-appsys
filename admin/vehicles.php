@@ -1,9 +1,10 @@
 <?php
 $page_title = 'Manage Vehicles';
-require_once '../includes/header.php';
+
+// First, handle all POST/GET redirects BEFORE any output
 require_once '../config/database.php';
-require_once '../includes/admin-sidebar.php';
-require_once '../includes/sos-button.php';
+require_once '../config/constants.php';
+
 if (!isAdmin()) {
     redirect(BASE_URL . 'auth/login.php');
 }
@@ -15,7 +16,6 @@ $success = '';
 if (isset($_GET['delete'])) {
     $vehicle_id = $_GET['delete'];
     try {
-        // Get photo path to delete file
         $stmt = $pdo->prepare("SELECT photo_url FROM vehicles WHERE vehicle_id = ?");
         $stmt->execute([$vehicle_id]);
         $vehicle = $stmt->fetch();
@@ -30,7 +30,7 @@ if (isset($_GET['delete'])) {
         $stmt = $pdo->prepare("DELETE FROM vehicles WHERE vehicle_id = ?");
         $stmt->execute([$vehicle_id]);
         $success = 'Vehicle deleted successfully!';
-        header("refresh:2;url=vehicles.php");
+        header("Location: vehicles.php");
         exit();
     } catch (PDOException $e) {
         $error = 'Failed to delete vehicle.';
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute([$model, $plate_number, $year, $type, $passenger_capacity, $status, $current_mileage, $price_per_day, $vehicle_id]);
                 }
                 $success = 'Vehicle updated successfully!';
-                header("refresh:2;url=vehicles.php");
+                header("Location: vehicles.php");
                 exit();
             } else {
                 // Insert new vehicle
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
                 $stmt->execute([$model, $plate_number, $year, $type, $passenger_capacity, $status, $current_mileage, $price_per_day, $photo_url]);
                 $success = 'Vehicle added successfully!';
-                header("refresh:2;url=vehicles.php");
+                header("Location: vehicles.php");
                 exit();
             }
         } catch (PDOException $e) {
@@ -120,6 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// Now include header (after all redirects)
+require_once '../includes/header.php';
+require_once '../includes/admin-sidebar.php';
+require_once '../includes/sos-button.php';
 
 // Get vehicles
 $stmt = $pdo->query("SELECT * FROM vehicles ORDER BY model ASC");
@@ -152,28 +157,28 @@ if (isset($_GET['edit'])) {
     </div>
 
     <!-- Search and Filter Bar -->
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="filter-bar">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search by model or plate number...">
-                <button class="search-btn" onclick="filterTable()">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </div>
-            <div class="filter-group">
-                <label>Filter by Status:</label>
-                <select id="statusFilter" class="filter-select" onchange="filterTable()">
-                    <option value="all">All Status</option>
-                    <option value="available">Available</option>
-                    <option value="rented">Rented</option>
-                    <option value="maintenance">Maintenance</option>
-                </select>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="filter-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search by model or plate number...">
+                    <button class="search-btn" onclick="filterTable()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <label>Filter by Status:</label>
+                    <select id="statusFilter" class="filter-select" onchange="filterTable()">
+                        <option value="all">All Status</option>
+                        <option value="available">Available</option>
+                        <option value="rented">Rented</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Vehicle Table -->
     <div class="card">
@@ -423,8 +428,7 @@ if (isset($_GET['edit'])) {
     }
 
     .btn-add {
-
-        background:#059669;
+        background: #059669;
         color: white;
         border: none;
         border-radius: 8px;
@@ -447,14 +451,18 @@ if (isset($_GET['edit'])) {
 
     .filter-bar {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .search-box {
         position: relative;
+        display: flex;
+        gap: 10px;
         flex: 1;
-        max-width: 300px;
+        max-width: 400px;
     }
 
     .search-box i {
@@ -463,10 +471,11 @@ if (isset($_GET['edit'])) {
         top: 50%;
         transform: translateY(-50%);
         color: #6B7280;
+        pointer-events: none;
     }
 
     .search-box input {
-        width: 100%;
+        flex: 1;
         height: 42px;
         padding: 0 15px 0 40px;
         border: 1px solid #E5E7EB;
@@ -481,94 +490,37 @@ if (isset($_GET['edit'])) {
         box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
     }
 
-    .filter-bar {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-}
+    .search-btn {
+        background: #16A34A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0 18px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-.search-box {
-    position: relative;
-    display: flex;
-    gap: 10px;
-    flex: 1;
-    max-width: 400px;
-}
+    .search-btn:hover {
+        background: #15803D;
+    }
 
-.search-box i {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6B7280;
-    pointer-events: none;
-}
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 
-.search-box input {
-    flex: 1;
-    height: 42px;
-    padding: 0 15px 0 40px;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    font-size: 14px;
-    background: white;
-}
-
-.search-box input:focus {
-    border-color: #16A34A;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
-}
-
-.search-btn {
-    background: #16A34A;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0 18px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.search-btn:hover {
-    background: #15803D;
-}
-
-.filter-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.filter-group label {
-    font-weight: 500;
-    color: #1F2937;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-.filter-select {
-    height: 42px;
-    padding: 0 15px;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    font-size: 14px;
-    background: white;
-    cursor: pointer;
-    min-width: 150px;
-}
-
-.filter-select:focus {
-    border-color: #16A34A;
-    outline: none;
-}
+    .filter-group label {
+        font-weight: 500;
+        color: #1F2937;
+        font-size: 14px;
+        white-space: nowrap;
+    }
 
     .filter-select {
         height: 42px;
@@ -578,6 +530,12 @@ if (isset($_GET['edit'])) {
         font-size: 14px;
         background: white;
         cursor: pointer;
+        min-width: 150px;
+    }
+
+    .filter-select:focus {
+        border-color: #16A34A;
+        outline: none;
     }
 
     .card {
@@ -827,7 +785,7 @@ if (isset($_GET['edit'])) {
 </style>
 
 <script>
-      function filterTable() {
+    function filterTable() {
         var searchValue = document.getElementById('searchInput').value.toLowerCase();
         var statusValue = document.getElementById('statusFilter').value;
         var rows = document.querySelectorAll('#vehicleTable tbody tr');
@@ -860,7 +818,6 @@ if (isset($_GET['edit'])) {
     document.addEventListener('DOMContentLoaded', function() {
         filterTable();
     });
-    }
 
     function populateEditForm(vehicleId) {
         // Fetch vehicle data via AJAX

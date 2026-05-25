@@ -3,6 +3,7 @@ session_start(); // MUST be first
 $page_title = 'Dashboard';
 require_once '../config/database.php'; // This must come BEFORE header.php
 
+require_once '../config/constants.php'; 
 if (!isCustomer()) {
     redirect(BASE_URL . 'auth/login.php');
 }

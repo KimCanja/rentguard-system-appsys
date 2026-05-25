@@ -1,13 +1,7 @@
 <?php
 // includes/sos-button.php
-// Check if session is already started before starting it
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
-}
-
-// Make sure database.php is included for functions
-if (!function_exists('redirect')) {
-    require_once __DIR__ . '/../config/database.php';
 }
 
 // Check if user has active rental
@@ -60,15 +54,9 @@ if (isset($_SESSION['user_id']) && isset($pdo)) {
 }
 
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .sos-modal {
@@ -95,14 +83,8 @@ if (isset($_SESSION['user_id']) && isset($pdo)) {
 }
 
 @keyframes slideIn {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .sos-modal-header {
@@ -218,8 +200,11 @@ if (isset($_SESSION['user_id']) && isset($pdo)) {
 }
 </style>
 
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <div class="sos-button-container">
-    <button class="sos-button" onclick="openSOSModal()">
+    <button class="sos-button" id="sosButton" onclick="openSOSModal()">
         <i class="fas fa-exclamation-triangle"></i>
     </button>
 </div>
@@ -229,7 +214,7 @@ if (isset($_SESSION['user_id']) && isset($pdo)) {
         <div class="sos-modal-header">
             <i class="fas fa-exclamation-triangle"></i>
             <h2>Emergency SOS</h2>
-            <p class="text-muted">Select the type of emergency assistance you need</p>
+            <p>Select the type of emergency assistance you need</p>
         </div>
         
         <div class="sos-options">
@@ -275,11 +260,14 @@ function closeSOSModal() {
     document.getElementById('sosModal').style.display = 'none';
     document.getElementById('sosMessage').value = '';
     selectedSOSType = 'emergency';
+    document.querySelectorAll('.sos-option').forEach(opt => {
+        opt.style.borderColor = '#E2E8F0';
+        opt.style.background = 'white';
+    });
 }
 
 function selectSOSType(type) {
     selectedSOSType = type;
-    // Highlight selected option
     document.querySelectorAll('.sos-option').forEach(opt => {
         opt.style.borderColor = '#E2E8F0';
         opt.style.background = 'white';
@@ -308,9 +296,7 @@ async function sendSOSAlert() {
     sendBtn.disabled = true;
     
     try {
-        // Get user location
         let location = null;
-        
         try {
             const position = await getLocation();
             location = {
@@ -318,22 +304,22 @@ async function sendSOSAlert() {
                 lng: position.coords.longitude
             };
         } catch (error) {
-            console.log('Location error:', error);
+            console.log('Location not available');
         }
         
-        // Send SOS alert via AJAX
         const formData = new FormData();
         formData.append('action', 'send_sos');
         formData.append('alert_type', selectedSOSType);
         formData.append('message', document.getElementById('sosMessage').value);
         formData.append('rental_id', '<?php echo $active_rental['rental_id'] ?? ''; ?>');
         formData.append('vehicle_id', '<?php echo $active_rental['vehicle_id'] ?? ''; ?>');
+        
         if (location) {
             formData.append('location_lat', location.lat);
             formData.append('location_lng', location.lng);
         }
         
-        const response = await fetch('/rentguard/ajax/sos-handler.php', {
+        const response = await fetch('../ajax/sos-handler.php', {
             method: 'POST',
             body: formData
         });
@@ -341,14 +327,13 @@ async function sendSOSAlert() {
         const result = await response.json();
         
         if (result.success) {
-            // Show success message
             document.getElementById('sosModalContent').innerHTML = `
                 <div class="sos-confirmation">
-                    <i class="fas fa-check-circle"></i>
+                    <i class="fas fa-check-circle" style="color: #10B981;"></i>
                     <h3>Alert Sent Successfully!</h3>
-                    <p>Our team has been notified and will contact you shortly.</p>
-                    <p class="text-muted">For immediate emergency, please call:<br><strong>911</strong></p>
-                    <button class="btn btn-primary mt-3" onclick="location.reload()">Close</button>
+                    <p>Your SOS alert has been sent to the admin.</p>
+                    <p class="text-muted mt-2">Admin will contact you shortly.</p>
+                    <button class="btn-sos-send" onclick="location.reload()" style="margin-top: 20px;">Close</button>
                 </div>
             `;
         } else {
@@ -356,18 +341,19 @@ async function sendSOSAlert() {
         }
         
     } catch (error) {
-        alert('Failed to send SOS alert. Please call emergency services directly: 911');
-        console.error(error);
+        alert('Error: ' + error.message);
         sendBtn.innerHTML = originalText;
         sendBtn.disabled = false;
     }
 }
 
-// Close modal when clicking outside
 window.onclick = function(event) {
     const modal = document.getElementById('sosModal');
     if (event.target === modal) {
         closeSOSModal();
     }
 }
+
+// Test if button exists
+console.log('SOS Button loaded');
 </script>

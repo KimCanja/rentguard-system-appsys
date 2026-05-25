@@ -178,5 +178,21 @@ function respondToAlert(id, name) {
     new bootstrap.Modal(document.getElementById('responseModal')).show();
 }
 </script>
+<script>
+
+setInterval(function() {
+    fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newTable = doc.querySelector('.table-responsive');
+            const currentTable = document.querySelector('.table-responsive');
+            if (newTable && currentTable) {
+                currentTable.innerHTML = newTable.innerHTML;
+            }
+        });
+}, 30000);
+</script>
 
 <?php require_once '../includes/footer.php'; ?>

@@ -4,9 +4,9 @@ require_once 'config/constants.php';
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
     if (isAdmin()) {
-        redirect(BASE_URL . 'rentguard/admin/dashboard.php');
+        redirect(BASE_URL . 'JhunriderSystem/admin/dashboard.php');
     } else {
-        redirect(BASE_URL . 'rentguard/customer/dashboard.php');
+        redirect(BASE_URL . 'JhunriderSystem/customer/dashboard.php');
     }
 }
 ?>
@@ -744,8 +744,8 @@ if (isset($_SESSION['user_id'])) {
                     <h4>Contact Info</h4>
                     <ul class="footer-links">
                         <li><i class="fas fa-map-marker-alt" style="color: var(--primary-green);"></i> Tagum City, Davao del Norte</li>
-                        <li><i class="fas fa-phone" style="color: var(--primary-green);"></i> +63 912 345 6789</li>
-                        <li><i class="fas fa-envelope" style="color: var(--primary-green);"></i> info@tcrgj.com</li>
+                        <li><i class="fas fa-phone" style="color: var(--primary-green);"></i> +63 9486318837</li>
+                        <li><i class="fas fa-envelope" style="color: var(--primary-green);"></i> https://www.facebook.com/jun.natividad.58323</li>
                     </ul>
                 </div>
                 <div class="col-md-3 mb-4">

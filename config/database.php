@@ -1,6 +1,5 @@
 <?php
 // config/database.php
-// Database configuration
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
@@ -8,7 +7,6 @@ define('DB_NAME', 'rentguard');
 
 require_once __DIR__ . '/constants.php';
 
-// Database connection
 try {
     $pdo = new PDO(
         "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
@@ -21,6 +19,8 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+    // Make sure this returns JSON, not HTML!
+    header('Content-Type: application/json');
+    die(json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]));
 }
 ?>

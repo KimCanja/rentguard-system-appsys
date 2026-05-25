@@ -13,7 +13,8 @@ if (!isset($profile_photo) && isset($_SESSION['user_id'])) {
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="<?php echo BASE_URL; ?>customer/dashboard.php">
-            <i class="fas fa-shield-alt"></i> RentGuard
+              <img src="../uploads/profiles/RentCar.png" alt="TCRCJ" style="width: 50px; height: 50px; object-fit: contain;">
+               Tagum City Rent Car Jhunrider
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>

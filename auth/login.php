@@ -27,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Redirect based on role
             if ($user['role'] === 'admin') {
-                header("Location: /rentguard/admin/dashboard.php");
+                header("Location: /JhunriderSystem/admin/dashboard.php");
                 exit();
             } else {
-                header("Location: /rentguard/customer/dashboard.php");
+                header("Location: /JhunriderSystem/customer/dashboard.php");
                 exit();
             }
         } else {

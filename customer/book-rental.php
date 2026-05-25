@@ -3,6 +3,7 @@ $page_title = 'Book Rental';
 require_once '../includes/header.php';
 require_once '../config/database.php';
 
+
 if (!isCustomer()) {
     redirect(BASE_URL . 'auth/login.php');
 }

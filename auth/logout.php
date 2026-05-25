@@ -6,6 +6,6 @@ session_start();
 session_destroy();
 
 // Direct redirect with absolute path
-header("Location: /rentguard/index.php");
+header("Location: /JhunriderSystem/index.php");
 exit();
 ?>
